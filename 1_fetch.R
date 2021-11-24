@@ -7,7 +7,62 @@ p1 <- list(
     p1_esm_xlsx,
     '1_fetch/in/10661_2020_8403_MOESM1_ESM.xlsx',
     format = 'file'
-  )
+  ),
+  
+  ##### LINDSAY'S ADDITIONS #####
+  
+  tar_target(p1_proj_str, "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"),
+  tar_target(
+    # Needed for cropping HUC4
+    p1_conus_sf, 
+    maps::map("usa", fill = TRUE, plot=FALSE) %>%
+      st_as_sf() %>% 
+      st_transform(p1_proj_str) %>% 
+      st_buffer(0)
+  ),
+  
+  # Load CSV from Hayley
+  # Specific to the mapping we need in the IWS basin viz
+  tar_target(p0_huc4_mapping_csv, "1_fetch/in/basin_mapping.csv", format = "file"),
+  tar_target(p0_huc4_mapping, 
+             read_csv(p0_huc4_mapping_csv) %>% 
+               select(iws_basin_id = basin_id,
+                      huc4 = huc04)
+  ),
+  
+  # Manual basins downloaded as gdb (ALL IN US), unzipped, 
+  # and put in the 1_fetch/in folder.
+  # https://nrcs.app.box.com/v/gateway/folder/39290322977
+  tar_target(
+    p1_huc4s_sf,
+    st_read("1_fetch/in/wbdhu4_a_us_september2021.gdb") %>% 
+      st_transform(p1_proj_str) %>% 
+      left_join(p1_huc4_mapping, by = "huc4")
+  ),
+  
+  # Get rivers by basin. Limit stream order
+  # to big streams only for now. 
+  # Sometimes this fails about that error related to needing
+  # a vector but having an sf object passed in. I can get
+  # around that by running tar_invalidate(p2_huc4s_sf_grp) first.
+  tar_target(
+    p1_rivers_sf,
+    download_rivers_sf(
+      # TODO: FIX THIS. Not ideal ... I do not like this but need to
+      # move on. It will not map over the grouped sf or just
+      # regular sf object. Keeps throwing that error about
+      # needing a vector. I don't think this solution will
+      # skip rebuilds for huc4s that haven't changed, so not
+      # a good long term solution.
+      aoi_sf = p2_huc4s_sf_grp, 
+      proj_str = p1_proj_str, 
+      streamorder = 6, # TODO: CHANGE THIS MATCH WHAT WE WILL USE
+      id_col = "iws_basin_id"),
+    pattern = map(p2_huc4s_sf_grp)
+  ),
+  
+  ###### END of Lindsay's additions
+  
   # # commented out this code for now, since not yet using any nhd data
   # tar_target(
   #   p1_drb_huc8s, 
