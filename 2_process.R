@@ -37,6 +37,35 @@ p2 <- list(
                                   variable='tot_wu', units='mgd', 
                                   out_file='2_process/out/basin_water_use.csv'),
     format = 'file'
+  ),
+  
+  ##### LINDSAY'S ADDITIONS #####
+  tar_target(
+    p1_huc4s_simp_sf,
+    p1_huc4s_sf %>% 
+      st_intersection(p1_conus_sf) %>% 
+      rmapshaper::ms_simplify(0.01)
+  ),
+  # If I don't do this first, I get an error about needing a vector
+  # not an sfc multipolygon. Mysterious :(
+  # Though, it may have something to do with slice?
+  # slice(p1_huc4s_simp_sf, 40) breaks with that error.
+  tar_target(
+    p2_huc4s_sf_grp,
+    p1_huc4s_simp_sf %>%
+      group_by(iws_basin_id) %>% 
+      tar_group(),
+    iteration = "group"
+  ),
+  tar_target(
+    p2_iws_basin_river_miles,
+    p1_rivers_sf %>% 
+      st_drop_geometry() %>% 
+      group_by(id_custom) %>% 
+      summarize(total_miles = sum(lengthkm)) %>% 
+      rename(iws_basin_id = id_custom)
   )
+  ###### END of Lindsay's additions
+  
   # TODO - add target to push the final data csv(s) to S3
 )
