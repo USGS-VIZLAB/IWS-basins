@@ -66,8 +66,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&display=swap');
 $Cairo: 'Cairo', sans-serif;
 $Assistant: 'Assistant', sans-serif;
+
+$dark_blue: rgb(26, 62, 89);
+$dark_purp:rgb(71, 9, 56);
+$lite_blue:rgb(92, 148, 189);
+$lite_purp: rgb(242, 214, 235); 
+
+$bkgd_color: rgb(49, 49, 49);
 $text_color: white;
-$bkgd_color: rgb(41, 41, 41);
 
 // Type
 html,

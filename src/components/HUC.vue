@@ -245,10 +245,14 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-$hilite: rgb(208, 138, 223);
+$dark_blue: rgb(26, 62, 89);
+$dark_purp:rgb(71, 9, 56);
+$lite_blue:rgb(92, 148, 189);
+$lite_purp: rgb(242, 214, 235); 
+$bkgd_color: $dark_blue;
+$text_color: $lite_purp;
 
 // style card
-
 #card-container {
   width: 100%;
   vertical-align: top;
@@ -262,26 +266,27 @@ $hilite: rgb(208, 138, 223);
 }
 </style>
 <style lang="scss">
+$card_text: #ffffff;
 .basinName {
-  color: #ffffff;
-  fill: #ffffff;
+  color: $card_text;
+  fill: $card_text;
   font-size: 1.5em;
 }
 .regionName {
-  color: #ffffff;
-  fill: #ffffff;
+  color: $card_text;
+  fill: $card_text;
   font-size: 1em;
   font-style: italic;
 }
 .statTitle {
-  color: #ffffff;
-  fill: #ffffff;
+  color: $card_text;
+  fill: $card_text;
   font-size: 0.8em;
   font-weight: 500;
 }
 .statValue {
-  color: #ffffff;
-  fill: #ffffff;
+  color: $card_text;
+  fill: $card_text;
   font-size: 0.8em;
 }
 </style>
